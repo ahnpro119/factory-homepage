@@ -38,11 +38,12 @@
     .product-mat { font-size: 13px; color: #666; margin-bottom: 6px; }
     .product-moq { font-size: 12px; color: #999; }
     .about-text { max-width: 720px; font-size: 16px; color: #444; line-height: 1.8; margin-bottom: 40px; }
-    .info-block { margin-bottom: 40px; max-width: 720px; }
+    .info-block { margin-bottom: 40px; max-width: 820px; }
     .info-list { list-style: none; }
-    .info-list li { padding: 14px 0; border-bottom: 1px solid #eee; }
+    .info-list li { padding: 18px 0; border-bottom: 1px solid #eee; }
     .info-list strong { display: block; margin-bottom: 4px; }
     .info-list span { color: #555; font-size: 14px; }
+    .proof-img { display: block; width: 100%; max-width: 480px; height: 220px; object-fit: cover; background: #f4f4f4; margin-top: 12px; }
     .map-container { display: flex; gap: 20px; }
     .map-item { flex: 1; min-width: 0; }
     .map-label { font-size: 13px; color: #555; margin-bottom: 10px; }
@@ -132,9 +133,7 @@ function showSection(name) {
   document.querySelectorAll('nav button').forEach(function(el){ el.classList.remove('active'); });
   var n = document.getElementById('nav-' + name); if (n) n.classList.add('active');
 }
-function csvUrl(gid) {
-  return SITE_CONFIG.PUB_BASE + '?gid=' + gid + '&single=true&output=csv';
-}
+function csvUrl(gid) { return SITE_CONFIG.PUB_BASE + '?gid=' + gid + '&single=true&output=csv'; }
 function parseCsv(text) {
   var rows = [], row = [], cur = '', q = false;
   for (var i = 0; i < text.length; i++) {
@@ -151,12 +150,14 @@ function parseCsv(text) {
   var start = 0;
   for (var r = 0; r < rows.length; r++) {
     var joined = rows[r].join(' ').toLowerCase();
-    if (joined.indexOf('productname') >= 0 || joined.indexOf('key') >= 0 || joined.indexOf('departureport') >= 0 || joined.indexOf('title') >= 0 || joined.indexOf('name') >= 0) { start = r; break; }
+    if (joined.indexOf('productname') >= 0 || joined.indexOf('departureport') >= 0 || (joined.indexOf('key') >= 0 && joined.indexOf('section') >= 0) || (joined.indexOf('title') >= 0 && joined.indexOf('description') >= 0) || (joined.indexOf('name') >= 0 && joined.indexOf('issuer') >= 0)) { start = r; break; }
   }
   var headers = (rows[start] || []).map(function(h){ return String(h||'').trim(); });
   var out = [];
   for (var i = start + 1; i < rows.length; i++) {
     if (!rows[i].join('')) continue;
+    var first = String(rows[i][0] || '');
+    if (first.indexOf('※') === 0) continue;
     var obj = {};
     headers.forEach(function(h, idx){ if (h) obj[h] = rows[i][idx] || ''; });
     out.push(obj);
@@ -166,6 +167,19 @@ function parseCsv(text) {
 function isActive(item) {
   var s = String(item.Status || '').trim().toLowerCase();
   return s === 'active' || s === '';
+}
+function imageSrc(url) {
+  if (!url) return '';
+  url = String(url).trim();
+  if (url.indexOf('http') !== 0) return '';
+  if (url.indexOf('SAMPLE_ID') >= 0) return '';
+  var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m && url.indexOf('drive.google.com') >= 0) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+  return url;
+}
+function imgTag(url, cls) {
+  var src = imageSrc(url);
+  return src ? '<img class="' + cls + '" src="' + src + '" alt="" onerror="this.style.display=\'none\'">' : '';
 }
 function fetchSheet(key) {
   return fetch(csvUrl(SITE_CONFIG.GIDS[key])).then(function(res){
@@ -203,7 +217,7 @@ function loadAll() {
     setText('footer-tagline', content.footer_tagline);
     var visible = all[1].filter(isActive);
     document.getElementById('products-grid').innerHTML = visible.length ? visible.map(function(p){
-      var img = p.ImageURL && p.ImageURL.indexOf('http') === 0 ? '<img class="product-img" src="'+p.ImageURL+'" alt="">' : '<div class="product-img placeholder">No Image</div>';
+      var img = imgTag(p.ImageURL, 'product-img') || '<div class="product-img placeholder">No Image</div>';
       return '<div class="product-card">'+img+'<div class="product-info"><div class="product-cat">'+(p.Category||'')+'</div><div class="product-name">'+(p.ProductName||'')+'</div><div class="product-mat">'+(p.Materials||'')+'</div><div class="product-moq">MOQ: '+(p.MOQ||'-')+' pcs</div></div></div>';
     }).join('') : '<p class="muted">No products yet.</p>';
     var ships = all[2].filter(isActive);
@@ -211,10 +225,10 @@ function loadAll() {
       return '<tr><td>'+(s.DeparturePort||'')+'</td><td>'+(s.DestinationPort||'')+'</td><td>'+(s.DestinationRegion||'')+'</td><td>'+(s.EstDaysMin||'')+'–'+(s.EstDaysMax||'')+' days</td><td>'+(s.ContainerType||'FCL')+'</td></tr>';
     }).join('') : '<tr><td colspan="5">No shipping data</td></tr>';
     document.getElementById('cert-list').innerHTML = all[3].filter(isActive).map(function(c){
-      return '<li><strong>'+(c.Name||'')+'</strong><span>'+(c.Issuer||c.Type||'')+'</span></li>';
+      return '<li><strong>'+(c.Name||'')+'</strong><span>'+(c.Issuer||c.Type||'')+'</span>'+imgTag(c.ImageURL,'proof-img')+'</li>';
     }).join('') || '<li><span>Available on request.</span></li>';
     document.getElementById('csr-list').innerHTML = all[4].filter(isActive).map(function(c){
-      return '<li><strong>'+(c.Title||'')+'</strong><span>'+(c.Description||'')+'</span></li>';
+      return '<li><strong>'+(c.Title||'')+'</strong><span>'+(c.Description||'')+'</span>'+imgTag(c.ImageURL,'proof-img')+'</li>';
     }).join('');
   }).catch(function(err){
     console.log(err);
