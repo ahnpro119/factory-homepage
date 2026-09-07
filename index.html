@@ -78,16 +78,19 @@ footer{background:#fff;border-top:1px solid #eee;padding:28px;color:#5c5e62;font
 .footer-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;gap:16px}
 .notice{padding:12px 14px;background:#fff8e1;color:#6d4c00;margin-bottom:24px;display:none}
 .notice.show{display:block}
-.home-rest{background:#fff}
-.factory-panel{position:relative;min-height:72vh;background:#d8d8d8;overflow:hidden;display:flex;align-items:flex-end}
+.home-rest{background:#fff;padding:56px 28px 72px}
+.factory-cols{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.factory-col{display:flex;flex-direction:column;gap:24px;min-width:0}
+.factory-panel{position:relative;min-height:52vh;background:#d8d8d8;overflow:hidden;display:flex;align-items:flex-end;border-radius:16px}
 .factory-panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .factory-panel .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#888;font-size:14px;letter-spacing:.12em;text-transform:uppercase}
-.factory-copy{position:relative;z-index:2;width:100%;padding:48px 36px;color:#fff;background:linear-gradient(180deg,transparent,rgba(0,0,0,.55))}
+.factory-copy{position:relative;z-index:2;width:100%;padding:28px 24px;color:#fff;background:linear-gradient(180deg,transparent,rgba(0,0,0,.55))}
 .factory-copy .kicker{color:rgba(255,255,255,.8)}
-.factory-copy h3{font-family:"Inter Tight",Inter,sans-serif;font-size:clamp(28px,4vw,44px);letter-spacing:-.03em;margin:6px 0 8px}
-.factory-copy p{font-size:16px;color:rgba(255,255,255,.9)}
-.home-maps{padding:48px 28px 72px;max-width:1200px;margin:0 auto}
-@media(max-width:800px){.header-inner{grid-template-columns:auto 1fr;padding:0 14px}nav{justify-content:flex-end;overflow:auto}.hero-actions,.btn{width:100%;min-width:0}.map-container{flex-direction:column}.logo{font-size:13px;letter-spacing:.04em}}
+.factory-copy h3{font-family:"Inter Tight",Inter,sans-serif;font-size:clamp(22px,2.4vw,32px);letter-spacing:-.03em;margin:6px 0 8px}
+.factory-copy p{font-size:14px;color:rgba(255,255,255,.9)}
+.factory-col .map-wrapper{height:280px;border-radius:16px;overflow:hidden}
+.factory-col .map-label{margin:0}
+@media(max-width:800px){.header-inner{grid-template-columns:auto 1fr;padding:0 14px}nav{justify-content:flex-end;overflow:auto}.hero-actions,.btn{width:100%;min-width:0}.map-container,.factory-cols{grid-template-columns:1fr;flex-direction:column}.logo{font-size:13px;letter-spacing:.04em}}
 </style>
 </head>
 <body>
@@ -108,17 +111,10 @@ footer{background:#fff;border-top:1px solid #eee;padding:28px;color:#5c5e62;font
 <div class="hero-copy"><h1 id="hero-title">Handbags from Yogyakarta since 1990</h1><p id="hero-subtitle">OEM / ODM fashion bags. Two factories.</p></div>
 <div class="hero-actions">
 <button type="button" class="btn btn-light" id="hero-cta" onclick="showSection('contact')">Request a Quote</button>
-<button type="button" class="btn btn-ghost" onclick="showSection('about')">Our Factories</button>
+<button type="button" class="btn btn-ghost" onclick="document.getElementById('home-factories').scrollIntoView({behavior:'smooth'})">Our Factories</button>
 </div></section>
 <div class="home-rest">
-<div id="home-factories"></div>
-<div class="home-maps">
-<div class="kicker" style="margin-bottom:16px">Factory locations</div>
-<div class="map-container">
-<div class="map-item"><div class="map-label">Bantul HQ — PT. Komitrando Emporio</div><div class="map-wrapper"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.6679903314125!2d110.42193867578364!3d-7.824921177720192!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a5787a290076b%3A0xd0c0f035db2322ae!2sPT.%20Komitrando%20Emporio!5e0!3m2!1sko!2sid!4v1787208107725!5m2!1sko!2sid" loading="lazy"></iframe></div></div>
-<div class="map-item"><div class="map-label">Wonosari — PT. Komitrando Wonosari</div><div class="map-wrapper"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3951.161674932498!2d110.61451347578563!3d-7.982233479592668!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7bb4827a673821%3A0x4f6bafadce9011e2!2sPT.%20KOMITRANDO%20WONOSARI!5e0!3m2!1sko!2sid!4v1787210270542!5m2!1sko!2sid" loading="lazy"></iframe></div></div>
-</div>
-</div>
+<div id="home-factories" class="factory-cols"></div>
 </div>
 </div>
 <div id="section-products" class="section"><section class="panel"><div class="wrap">
@@ -248,11 +244,13 @@ function loadAll(){
     var facts=all[5].filter(isActive);
     var home=document.getElementById('home-factories');
     if(home){
+      var maps={BT:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.6679903314125!2d110.42193867578364!3d-7.824921177720192!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a5787a290076b%3A0xd0c0f035db2322ae!2sPT.%20Komitrando%20Emporio!5e0!3m2!1sko!2sid!4v1787208107725!5m2!1sko!2sid',WN:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3951.161674932498!2d110.61451347578563!3d-7.982233479592668!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7bb4827a673821%3A0x4f6bafadce9011e2!2sPT.%20KOMITRANDO%20WONOSARI!5e0!3m2!1sko!2sid!4v1787210270542!5m2!1sko!2sid'};
       home.innerHTML=facts.map(function(f){
         var img=imgTag(f.ImageURL,'');
         var media=img||'<div class="ph">Factory photo</div>';
         var meta=(f.Since?('Since '+f.Since):'')+(f.Lines?(' · '+f.Lines+' lines'):'')+(f.Workers?(' · '+f.Workers+' people'):'')+(f.MonthlyPcs?(' · '+f.MonthlyPcs+' pcs/month'):'');
-        return '<div class="factory-panel">'+media+'<div class="factory-copy"><div class="kicker">'+(f.Code||'Factory')+'</div><h3>'+(f.Name||'')+'</h3><p>'+meta+'</p></div></div>';
+        var map=maps[f.Code]?'<div class="map-label">'+(f.Name||f.Code)+'</div><div class="map-wrapper"><iframe src="'+maps[f.Code]+'" loading="lazy"></iframe></div>':'';
+        return '<div class="factory-col"><div class="factory-panel">'+media+'<div class="factory-copy"><div class="kicker">'+(f.Code||'Factory')+'</div><h3>'+(f.Name||'')+'</h3><p>'+meta+'</p></div></div>'+map+'</div>';
       }).join('');
     }
     document.getElementById('factory-facts').innerHTML=facts.map(function(f){
