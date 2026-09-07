@@ -91,6 +91,7 @@ footer{border-top:1px solid #e5e5e5;padding:32px 0}
 <div id="section-about" class="section"><div class="container section-content">
 <div class="section-title">About Us</div><h2 class="section-heading">Who We Are</h2>
 <p class="about-text" id="about-text">We are a dedicated handbag manufacturer in Yogyakarta, Indonesia.</p>
+<div class="info-block"><div class="section-title">Capacity</div><p class="about-text" id="capacity-text"></p><p class="about-text" id="capabilities-text"></p></div>
 <div class="info-block"><div class="section-title" id="bonded-title">Bonded Zone Facility</div><p class="about-text" id="bonded-text">Our factory operates under Indonesia’s Kawasan Berikat (bonded zone) scheme.</p></div>
 <div class="info-block"><div class="section-title">Materials</div><p class="about-text" id="materials-text">Selected materials and hardware partners include YKK.</p></div>
 <div class="info-block"><div class="section-title">Certifications</div><p class="muted" id="cert-intro"></p><ul class="info-list" id="cert-list"></ul></div>
@@ -199,7 +200,7 @@ function fillSelect(id, values, placeholder){
   var el=document.getElementById(id);
   var cur=el.value;
   el.innerHTML='<option value="">'+placeholder+'</option>'+values.map(function(v){
-    return '<option value="'+v.replace(/"/g,'&quot;')+'">'+v+'</option>';
+    return '<option value="'+v.replace(/"/g,'"')+'">'+v+'</option>';
   }).join('');
   if(cur) el.value=cur;
 }
@@ -242,6 +243,8 @@ function loadAll(){
     setText('hero-subtitle',content.home_hero_subtitle);
     setText('hero-cta',content.home_cta_text);
     setText('about-text',content.about_intro);
+    setText('capacity-text',content.about_capacity);
+    setText('capabilities-text',content.capabilities_intro);
     setText('bonded-title',content.bonded_zone_title);
     setText('bonded-text',content.bonded_zone_text);
     setText('materials-text',content.materials_partners);
