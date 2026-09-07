@@ -49,9 +49,15 @@ nav button:hover,nav button.active{color:#111;border-bottom-color:#111}
 .map-label{font-size:13px;color:#555;margin-bottom:10px}
 .map-wrapper{height:320px;border:1px solid #e5e5e5;overflow:hidden}
 .map-wrapper iframe{width:100%;height:100%;border:0}
+.ship-filters{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 20px}
+.ship-filter{display:flex;flex-direction:column;gap:6px;min-width:220px}
+.ship-filter label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#999}
+.ship-filter select{font-family:inherit;font-size:14px;padding:10px 12px;border:1px solid #ddd;background:#fff;color:#111}
 .ship-table{width:100%;border-collapse:collapse;font-size:14px}
 .ship-table th{text-align:left;padding:12px 14px;border-bottom:2px solid #1a1a1a;font-size:12px;text-transform:uppercase}
 .ship-table td{padding:13px 14px;border-bottom:1px solid #eee}
+.ship-more{margin-top:16px;background:none;border:1px solid #111;color:#111;padding:10px 18px;font-family:inherit;font-size:13px;cursor:pointer;display:none}
+.ship-count{font-size:12px;color:#888;margin-top:10px}
 .muted{color:#666;margin-bottom:24px;max-width:540px}
 footer{border-top:1px solid #e5e5e5;padding:32px 0}
 .footer-inner{display:flex;justify-content:space-between;font-size:13px;color:#888}
@@ -97,7 +103,19 @@ footer{border-top:1px solid #e5e5e5;padding:32px 0}
 <div id="section-logistics" class="section"><div class="container section-content">
 <div class="section-title">Logistics</div><h2 class="section-heading">Estimated Shipping Times</h2>
 <p class="muted" id="logistics-intro">We ship from major Indonesian ports worldwide.</p>
+<div class="ship-filters">
+  <div class="ship-filter">
+    <label for="filter-from">From</label>
+    <select id="filter-from" onchange="renderShips()"><option value="">All ports</option></select>
+  </div>
+  <div class="ship-filter">
+    <label for="filter-to">To</label>
+    <select id="filter-to" onchange="renderShips()"><option value="">All destinations</option></select>
+  </div>
+</div>
 <div style="overflow-x:auto"><table class="ship-table"><thead><tr><th>From</th><th>To</th><th>Region</th><th>Days</th><th>Type</th></tr></thead><tbody id="ship-body"></tbody></table></div>
+<div class="ship-count" id="ship-count"></div>
+<button type="button" class="ship-more" id="ship-more" onclick="showAllShips=true;renderShips()">Show all routes</button>
 </div></div>
 <div id="section-contact" class="section"><div class="container section-content">
 <div class="section-title">Contact</div><h2 class="section-heading">Get in Touch</h2>
@@ -107,6 +125,9 @@ footer{border-top:1px solid #e5e5e5;padding:32px 0}
 <footer><div class="container footer-inner"><div id="footer-tagline">Handcrafted in Indonesia. Built for the world.</div><div>© 2026 PT. Komitrando Emporio</div></div></footer>
 <script src="config.js"></script>
 <script>
+var shipRows=[];
+var showAllShips=false;
+var SHIP_DEFAULT=8;
 function showSection(name){
   document.querySelectorAll('.section').forEach(function(el){el.classList.remove('active')});
   var s=document.getElementById('section-'+name); if(s) s.classList.add('active');
@@ -168,6 +189,40 @@ function fetchSheet(key){
   return fetch(csvUrl(SITE_CONFIG.GIDS[key])).then(function(res){if(!res.ok)throw new Error('fetch failed');return res.text()}).then(parseCsv);
 }
 function setText(id,value){if(!value)return;var el=document.getElementById(id);if(el)el.textContent=value}
+function uniqueSorted(list){
+  var seen={}; var out=[];
+  list.forEach(function(v){v=String(v||'').trim(); if(!v||seen[v])return; seen[v]=1; out.push(v)});
+  out.sort();
+  return out;
+}
+function fillSelect(id, values, placeholder){
+  var el=document.getElementById(id);
+  var cur=el.value;
+  el.innerHTML='<option value="">'+placeholder+'</option>'+values.map(function(v){
+    return '<option value="'+v.replace(/"/g,'&quot;')+'">'+v+'</option>';
+  }).join('');
+  if(cur) el.value=cur;
+}
+function filteredShips(){
+  var from=document.getElementById('filter-from').value;
+  var to=document.getElementById('filter-to').value;
+  return shipRows.filter(function(s){
+    if(from && s.DeparturePort!==from) return false;
+    if(to && s.DestinationPort!==to) return false;
+    return true;
+  });
+}
+function renderShips(){
+  var list=filteredShips();
+  var limited=(!showAllShips && !document.getElementById('filter-from').value && !document.getElementById('filter-to').value && list.length>SHIP_DEFAULT);
+  var shown=limited?list.slice(0,SHIP_DEFAULT):list;
+  document.getElementById('ship-body').innerHTML=shown.length?shown.map(function(s){
+    return '<tr><td>'+(s.DeparturePort||'')+'</td><td>'+(s.DestinationPort||'')+'</td><td>'+(s.DestinationRegion||'')+'</td><td>'+(s.EstDaysMin||'')+'–'+(s.EstDaysMax||'')+' days</td><td>'+(s.ContainerType||'FCL')+'</td></tr>';
+  }).join(''):'<tr><td colspan="5">No matching routes</td></tr>';
+  var more=document.getElementById('ship-more');
+  more.style.display=limited?'inline-block':'none';
+  document.getElementById('ship-count').textContent=shown.length+(limited?(' of '+list.length+' routes'): (list.length?(' '+list.length+' routes'):''));
+}
 function loadAll(){
   var notice=document.getElementById('sheet-notice');
   Promise.all([
@@ -200,10 +255,10 @@ function loadAll(){
       var img=imgTag(p.ImageURL,'product-img')||'<div class="product-img placeholder">No Image</div>';
       return '<div class="product-card">'+img+'<div class="product-info"><div class="product-cat">'+(p.Category||'')+'</div><div class="product-name">'+(p.ProductName||'')+'</div><div class="product-mat">'+(p.Materials||'')+'</div><div class="product-moq">MOQ: '+(p.MOQ||'-')+' pcs</div></div></div>';
     }).join(''):'<p class="muted">No products yet.</p>';
-    var ships=all[2].filter(isActive);
-    document.getElementById('ship-body').innerHTML=ships.length?ships.map(function(s){
-      return '<tr><td>'+(s.DeparturePort||'')+'</td><td>'+(s.DestinationPort||'')+'</td><td>'+(s.DestinationRegion||'')+'</td><td>'+(s.EstDaysMin||'')+'–'+(s.EstDaysMax||'')+' days</td><td>'+(s.ContainerType||'FCL')+'</td></tr>';
-    }).join(''):'<tr><td colspan="5">No shipping data</td></tr>';
+    shipRows=all[2].filter(isActive);
+    fillSelect('filter-from', uniqueSorted(shipRows.map(function(s){return s.DeparturePort})), 'All ports');
+    fillSelect('filter-to', uniqueSorted(shipRows.map(function(s){return s.DestinationPort})), 'All destinations');
+    renderShips();
     document.getElementById('cert-list').innerHTML=all[3].filter(isActive).map(function(c){
       return '<li><strong>'+(c.Name||'')+'</strong><span>'+(c.Issuer||c.Type||'')+'</span>'+imgTag(c.ImageURL,'proof-img')+'</li>';
     }).join('')||'<li><span>Available on request.</span></li>';
