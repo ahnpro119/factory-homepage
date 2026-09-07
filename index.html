@@ -60,8 +60,6 @@ h2{font-family:"Inter Tight",Inter,sans-serif;font-size:clamp(28px,4vw,40px);fon
 .card h3{font-family:"Inter Tight",Inter,sans-serif;font-size:18px;margin-bottom:8px}
 .card p{color:#5c5e62;font-size:14px;margin:4px 0}
 .card a{color:#171a20}
-.map-container{display:flex;gap:16px}
-.map-item{flex:1;min-width:0}
 .map-label{font-size:13px;margin-bottom:10px;color:#5c5e62}
 .map-wrapper{height:340px;overflow:hidden}
 .map-wrapper iframe{width:100%;height:100%;border:0}
@@ -89,8 +87,8 @@ footer{background:#fff;border-top:1px solid #eee;padding:28px;color:#5c5e62;font
 .factory-copy h3{font-family:"Inter Tight",Inter,sans-serif;font-size:clamp(22px,2.4vw,32px);letter-spacing:-.03em;margin:6px 0 8px}
 .factory-copy p{font-size:14px;color:rgba(255,255,255,.9)}
 .factory-col .map-wrapper{height:280px;border-radius:16px;overflow:hidden}
-.factory-col .map-label{margin:0}
-@media(max-width:800px){.header-inner{grid-template-columns:auto 1fr;padding:0 14px}nav{justify-content:flex-end;overflow:auto}.hero-actions,.btn{width:100%;min-width:0}.map-container,.factory-cols{grid-template-columns:1fr;flex-direction:column}.logo{font-size:13px;letter-spacing:.04em}}
+.factory-col .map-label{margin:0 0 8px}
+@media(max-width:800px){.header-inner{grid-template-columns:auto 1fr;padding:0 14px}nav{justify-content:flex-end;overflow:auto}.hero-actions,.btn{width:100%;min-width:0}.factory-cols{grid-template-columns:1fr}.logo{font-size:13px;letter-spacing:.04em}}
 </style>
 </head>
 <body>
@@ -131,7 +129,7 @@ footer{background:#fff;border-top:1px solid #eee;padding:28px;color:#5c5e62;font
 <div class="info-block"><div class="kicker">Capacity</div><p class="lead" id="capacity-text"></p></div>
 <div class="info-block"><div class="kicker">Quality</div><p class="lead" id="qc-text"></p>
 <p class="lead" id="sample-lead"></p><p class="lead" id="bulk-lead"></p></div>
-<div class="info-block"><div class="kicker">How we work</div><p class="lead" id="process-intro"></p><ol class="steps" id="process-list"></ol></div>
+<div class="info-block" id="process-block" hidden><div class="kicker">How we work</div><p class="lead" id="process-intro"></p><ol class="steps" id="process-list"></ol></div>
 <div class="info-block"><div class="kicker" id="bonded-title">Kawasan Berikat</div><p class="lead" id="bonded-text"></p></div>
 <div class="info-block"><div class="kicker">Materials</div><p class="lead" id="materials-text"></p></div>
 <div class="info-block"><div class="kicker">Certifications</div><p class="lead" id="cert-intro"></p><ul class="info-list" id="cert-list"></ul></div>
@@ -229,7 +227,6 @@ function loadAll(){
     setText('qc-text',content.qc_intro);
     setText('sample-lead',content.sample_leadtime);
     setText('bulk-lead',content.bulk_leadtime);
-    setText('process-intro',content.process_intro);
     setText('bonded-title',content.bonded_zone_title);
     setText('bonded-text',content.bonded_zone_text);
     setText('materials-text',content.materials_text||content.materials_partners);
@@ -255,10 +252,6 @@ function loadAll(){
     }
     document.getElementById('factory-facts').innerHTML=facts.map(function(f){
       return '<div class="fact"><b>'+(f.Name||f.Code||'')+'</b><span>'+(f.Since?('Since '+f.Since+' · '):'')+(f.Lines||'')+' lines · '+(f.Workers||'')+' people'+(f.MonthlyPcs?(' · '+f.MonthlyPcs+' pcs/month'):'')+'</span></div>';
-    }).join('');
-    var steps=all[6].filter(isActive);
-    document.getElementById('process-list').innerHTML=steps.map(function(p){
-      return '<li><em>'+(p.Step||p.ID||'')+'</em><div><strong>'+(p.Title||'')+'</strong><div class="product-mat">'+(p.Description||'')+'</div></div></li>';
     }).join('');
     var visible=all[1].filter(isActive);
     document.getElementById('products-grid').innerHTML=visible.length?visible.map(function(p){
