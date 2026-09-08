@@ -1,40 +1,60 @@
+(function(){
+  var css=document.createElement('style');
+  css.textContent='.product-media{position:relative;height:280px;background:#f4f4f4}.product-media .product-img,.product-media .product-img.placeholder{height:280px}.product-hover-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:20px;background:#f4f4f4;opacity:0;pointer-events:none;transition:opacity .2s ease}.product-card.has-video:hover .product-hover-video,.product-card.has-video.is-playing .product-hover-video{opacity:1}.product-card.has-video{cursor:default}';
+  document.head.appendChild(css);
+})();
 function videoSrc(url){
   url=String(url||'').trim();
   if(!url || url.indexOf('http')!==0) return null;
-  var yt=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{6,})/);
-  if(yt) return {type:'yt', id:yt[1]};
-  return {type:'file', src:url};
+  if(/(?:youtube\.com|youtu\.be)/.test(url)) return null;
+  return url;
 }
-function openProductVideo(url){
-  var v=videoSrc(url);
-  if(!v) return;
-  var modal=document.getElementById('video-modal');
-  var box=document.getElementById('video-modal-body');
-  if(!modal||!box) return;
-  if(v.type==='yt'){
-    box.innerHTML='<iframe src="https://www.youtube.com/embed/'+v.id+'?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen title="Product video"></iframe>';
-  } else {
-    box.innerHTML='<video controls autoplay playsinline src="'+v.src+'"></video>';
-  }
-  modal.classList.add('open');
+function playCardVideo(card){
+  if(!card) return;
+  var vid=card.querySelector('.product-hover-video');
+  if(!vid) return;
+  card.classList.add('is-playing');
+  vid.muted=true;
+  var run=vid.play();
+  if(run&&run.catch) run.catch(function(){});
 }
-function closeProductVideo(){
-  var modal=document.getElementById('video-modal');
-  var box=document.getElementById('video-modal-body');
-  if(box) box.innerHTML='';
-  if(modal) modal.classList.remove('open');
+function stopCardVideo(card){
+  if(!card) return;
+  var vid=card.querySelector('.product-hover-video');
+  if(!vid) return;
+  vid.pause();
+  try{vid.currentTime=0}catch(e){}
+  card.classList.remove('is-playing');
 }
 (function(){
   var original=window.productCard;
   if(!original) return;
   window.productCard=function(p){
     var html=original(p);
-    var vu=String((p&&p.VideoURL)||'').trim();
-    if(!videoSrc(vu)) return html;
-    var safe=vu.replace(/&/g,'&').replace(/"/g,'"');
-    return html.replace('class="product-card"','class="product-card has-video" data-video="'+safe+'" onclick="openProductVideo(this.dataset.video)"');
+    var src=videoSrc(p&&p.VideoURL);
+    if(!src) return html;
+    var safe=src.replace(/&/g,'&').replace(/"/g,'"');
+    html=html.replace('class="product-card"','class="product-card has-video"');
+    html=html.replace(/(<img class="product-img"[^>]*>|<div class="product-img placeholder">[\s\S]*?<\/div>)/,
+      '<div class="product-media">$1<video class="product-hover-video" muted loop playsinline preload="metadata" src="'+safe+'"></video></div>');
+    return html;
   };
 })();
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape') closeProductVideo();
+document.addEventListener('mouseover',function(e){
+  var card=e.target.closest('.product-card.has-video');
+  if(!card) return;
+  if(e.relatedTarget&&card.contains(e.relatedTarget)) return;
+  playCardVideo(card);
 });
+document.addEventListener('mouseout',function(e){
+  var card=e.target.closest('.product-card.has-video');
+  if(!card) return;
+  if(e.relatedTarget&&card.contains(e.relatedTarget)) return;
+  stopCardVideo(card);
+});
+document.addEventListener('touchstart',function(e){
+  var card=e.target.closest('.product-card.has-video');
+  if(!card) return;
+  if(card.classList.contains('is-playing')) stopCardVideo(card);
+  else playCardVideo(card);
+},{passive:true});
