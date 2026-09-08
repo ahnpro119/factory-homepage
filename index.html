@@ -12,12 +12,15 @@
 body{font-family:Inter,-apple-system,sans-serif;color:var(--ink);background:#000;line-height:1.5;font-size:14px}
 button,select{font-family:inherit}
 .section{display:none}.section.active{display:block}
-header{position:fixed;top:0;left:0;right:0;z-index:40;height:56px;display:flex;align-items:center;background:linear-gradient(180deg,rgba(0,0,0,.35),transparent)}
+header{position:fixed;top:0;left:0;right:0;z-index:40;height:56px;display:flex;align-items:center;background:linear-gradient(180deg,rgba(0,0,0,.35),transparent);transition:background .2s ease,box-shadow .2s ease}
+header.solid{background:#fff;box-shadow:0 1px 0 rgba(23,26,32,.1)}
 .header-inner{width:100%;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 28px}
 .logo{justify-self:start;background:none;border:none;color:#fff;font-family:"Inter Tight",Inter,sans-serif;font-weight:700;font-size:16px;letter-spacing:.08em;cursor:pointer}
 nav{display:flex;gap:4px;justify-content:center}
 nav button{background:none;border:none;color:#fff;font-size:14px;font-weight:500;padding:8px 14px;border-radius:99px;cursor:pointer}
 nav button:hover,nav button.active{background:rgba(255,255,255,.12)}
+header.solid .logo,header.solid nav button{color:#171a20}
+header.solid nav button:hover,header.solid nav button.active{background:rgba(23,26,32,.08)}
 .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:92px 24px 48px;color:#fff;text-align:center;overflow:hidden}
 .hero-video,.hero-overlay{position:absolute;inset:0}
 .hero-video{width:100%;height:100%;object-fit:cover}
@@ -96,7 +99,7 @@ footer{background:#fff;border-top:1px solid #eee;padding:28px;color:#5c5e62;font
 </style>
 </head>
 <body>
-<header><div class="header-inner">
+<header id="site-header"><div class="header-inner">
 <button class="logo" onclick="showSection('home')">KOMITRANDO.COM</button>
 <nav>
 <button type="button" id="nav-home" class="active" onclick="showSection('home')">Home</button>
