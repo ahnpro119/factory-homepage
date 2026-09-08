@@ -1,4 +1,9 @@
 (function(){
+  var s=document.createElement('script');
+  s.src='media-guard.js';
+  document.head.appendChild(s);
+})();
+(function(){
   var css=document.createElement('style');
   css.textContent='.product-img{padding:0!important}.product-media{position:relative;height:280px;background:#f4f4f4}.product-media .product-img,.product-media .product-img.placeholder{height:280px}.product-hover-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:0;background:#f4f4f4;opacity:0;pointer-events:none;transition:opacity .2s ease}.product-card.has-video:hover .product-hover-video,.product-card.has-video.is-playing .product-hover-video{opacity:1}.product-card.has-video{cursor:default}';
   document.head.appendChild(css);
@@ -43,7 +48,7 @@ function stopCardVideo(card){
     var safe=src.replace(/&/g,'&').replace(/"/g,'"');
     html=html.replace('class="product-card"','class="product-card has-video"');
     html=html.replace(/(<img class="product-img"[^>]*>|<div class="product-img placeholder">[\s\S]*?<\/div>)/,
-      '<div class="product-media">$1<video class="product-hover-video" muted loop playsinline preload="metadata" src="'+safe+'"></video></div>');
+      '<div class="product-media">$1<video class="product-hover-video" muted loop playsinline controlslist="nodownload" preload="metadata" src="'+safe+'"></video></div>');
     return html;
   };
 })();
