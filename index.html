@@ -47,12 +47,21 @@ h2{font-family:"Inter Tight",Inter,sans-serif;font-size:clamp(28px,4vw,40px);fon
 @media(max-width:1100px){.products-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:640px){.products-grid{grid-template-columns:1fr}}
 .product-card{background:#f4f4f4;overflow:hidden;border-radius:12px}
+.product-card.has-video{cursor:pointer}
+.product-card.has-video .product-img{position:relative}
+.product-play{position:absolute;right:16px;bottom:16px;width:36px;height:36px;border-radius:99px;background:rgba(23,26,32,.78);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;letter-spacing:.04em}
 .product-img{width:100%;height:280px;object-fit:contain;background:#f4f4f4;display:block;padding:20px}
 .product-img.placeholder{display:flex;align-items:center;justify-content:center;color:#aaa;height:280px}
 .product-info{padding:18px 20px 22px;background:#fff}
 .product-cat{font-size:12px;color:#5c5e62;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
 .product-name{font-family:"Inter Tight",Inter,sans-serif;font-size:20px;font-weight:600}
 .product-mat,.product-moq{font-size:13px;color:#5c5e62;margin-top:4px}
+.video-modal{display:none;position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:24px}
+.video-modal.open{display:flex}
+.video-modal-inner{width:min(920px,100%);background:#000;border-radius:12px;overflow:hidden;position:relative}
+.video-modal-body{width:100%;aspect-ratio:16/9;background:#000}
+.video-modal-body video,.video-modal-body iframe{width:100%;height:100%;border:0;display:block;background:#000}
+.video-modal-close{position:absolute;top:8px;right:8px;width:36px;height:36px;border:0;border-radius:99px;background:rgba(255,255,255,.92);cursor:pointer;font-size:20px;line-height:36px}
 .info-block{margin:0 0 48px;max-width:800px}
 .steps{list-style:none;max-width:800px}
 .steps li{display:grid;grid-template-columns:52px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
@@ -160,8 +169,15 @@ footer{background:#fff;border-top:1px solid #eee;padding:28px;color:#5c5e62;font
 <p class="lead" id="payment-terms"></p>
 <div class="cards" id="contact-cards"></div>
 </div></section></div>
+<div id="video-modal" class="video-modal" onclick="if(event.target===this)closeProductVideo()">
+<div class="video-modal-inner">
+<button type="button" class="video-modal-close" onclick="closeProductVideo()" aria-label="Close">×</button>
+<div id="video-modal-body" class="video-modal-body"></div>
+</div>
+</div>
 <footer><div class="footer-inner"><div id="footer-tagline">Yogyakarta · since 1990</div><div>© 2026 PT. Komitrando Emporio</div></div></footer>
 <script src="config.js"></script>
 <script src="app.js"></script>
+<script src="product-video.js"></script>
 <script src="nav.js"></script>
 </body></html>
