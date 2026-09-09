@@ -9,6 +9,8 @@ window.SITE_CONFIG = {
     shipping: '1887872639',
     certifications: '432822332',
     csr: '1937839952',
-    contact: '1705648852'
+    contact: '1705648852',
+    rdProcess: '1798431488',
+    rdCapability: '1393092919'
   }
 };
