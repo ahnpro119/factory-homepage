@@ -130,34 +130,18 @@ function renderRd(content, capRows, procRows){
     if(src){hero.style.backgroundImage='url("'+src+'")';hero.classList.add('has-photo')}
   }
   var cols=capRows.filter(isActive).filter(function(r){return String(r.Category||'').trim()});
-  cols.sort(function(a,b){
-    var an=String(a.Category).toLowerCase()==='total'?999:(parseInt(a.SortOrder,10)||50);
-    var bn=String(b.Category).toLowerCase()==='total'?999:(parseInt(b.SortOrder,10)||50);
-    return an-bn;
-  });
-  var metrics=[
-    ['No. of Sample room','SampleRooms'],
-    ['Capacity / Month (pc)','CapacityMonth'],
-    ['Pattern designer','PatternDesigner'],
-    ['Marker maker','MarkerMaker'],
-    ['Sewing worker / Assistant','Sewing'],
-    ['Office worker / ETC','Office'],
-    ['TOTAL','Headcount']
-  ];
-  var table=document.getElementById('rd-cap-table');
-  if(table){
-    if(!cols.length){
-      table.innerHTML='';
-    } else {
-      var head='<tr><th></th>'+cols.map(function(c){return '<th>'+c.Category+'</th>'}).join('')+'</tr>';
-      var body=metrics.map(function(m){
-        var cells=cols.map(function(c){return fmtNum(c[m[1]])});
-        if(!cells.join('')) return '';
-        var last=m[0]==='TOTAL';
-        return '<tr'+(last?' class="total"':'')+'><th>'+m[0]+'</th>'+cells.map(function(v){return '<td>'+(v||'—')+'</td>'}).join('')+'</tr>';
-      }).join('');
-      table.innerHTML='<thead>'+head+'</thead><tbody>'+body+'</tbody>';
-    }
+  var total=null;
+  cols.forEach(function(r){if(String(r.Category).toLowerCase()==='total') total=r});
+  if(!total) total=cols[0]||{};
+  var cards=[];
+  if(String(total.SampleRooms||'').trim()) cards.push({n:fmtNum(total.SampleRooms),l:'Sample rooms',s:'On-site development rooms'});
+  if(String(total.CapacityMonth||'').trim()) cards.push({n:fmtNum(total.CapacityMonth)+' pcs',l:'Monthly samples',s:'Sample output capacity'});
+  if(String(total.Headcount||'').trim()) cards.push({n:fmtNum(total.Headcount),l:'Sample team',s:'People in the sample room'});
+  var box=document.getElementById('rd-cap-cards');
+  if(box){
+    box.innerHTML=cards.map(function(c){
+      return '<div class="rd-fact"><b>'+c.n+'</b><strong>'+c.l+'</strong><span>'+c.s+'</span></div>';
+    }).join('');
   }
   procRows=procRows.filter(isActive);
   procRows.sort(function(a,b){return (parseInt(a.SortOrder,10)||999)-(parseInt(b.SortOrder,10)||999)});
