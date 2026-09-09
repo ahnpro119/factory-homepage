@@ -110,12 +110,11 @@ footer{background:#fff;border-top:1px solid #eee;padding:28px;color:#5c5e62;font
 .rd-card h3:first-child{margin-top:0}
 .rd-card ul{margin:0 0 8px 18px;color:#5c5e62}
 .rd-card li{margin:4px 0}
-.rd-cap-wrap{overflow-x:auto}
-.rd-cap{width:100%;border-collapse:collapse;font-size:14px}
-.rd-cap th,.rd-cap td{padding:12px 10px;border-bottom:1px solid #ececec;text-align:center}
-.rd-cap thead th,.rd-cap tbody th{text-align:left;font-size:13px}
-.rd-cap thead th{background:#f4f4f4;font-weight:600}
-.rd-cap tr.total th,.rd-cap tr.total td{font-weight:700;border-top:1px solid #171a20}
+.rd-facts{display:grid;grid-template-columns:1fr;gap:12px}
+.rd-fact{background:#f4f4f4;border-radius:12px;padding:18px 20px}
+.rd-fact b{display:block;font-family:"Inter Tight",Inter,sans-serif;font-size:28px;letter-spacing:-.03em;line-height:1.1}
+.rd-fact strong{display:block;margin-top:6px;font-size:14px}
+.rd-fact span{display:block;color:#5c5e62;font-size:13px;margin-top:2px}
 .rd-steps{list-style:none;max-width:900px}
 .rd-steps li{display:grid;grid-template-columns:92px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid var(--line)}
 .rd-step-no{font-family:"Inter Tight",Inter,sans-serif;font-weight:600}
@@ -172,7 +171,7 @@ footer{background:#fff;border-top:1px solid #eee;padding:28px;color:#5c5e62;font
 </div>
 <div class="rd-card">
 <h3 id="rd-capability-title">R & D Capability</h3>
-<div class="rd-cap-wrap"><table class="rd-cap" id="rd-cap-table"></table></div>
+<div class="rd-facts" id="rd-cap-cards"></div>
 </div>
 </div>
 <div class="kicker">Development</div>
