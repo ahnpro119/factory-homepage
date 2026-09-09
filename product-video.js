@@ -5,7 +5,7 @@
 })();
 (function(){
   var css=document.createElement('style');
-  css.textContent='.product-media{position:relative;width:100%;aspect-ratio:1/1;height:auto!important;background:#f4f4f4;overflow:hidden}.product-media .product-img,.product-media .product-img.placeholder{position:absolute;inset:0;width:100%;height:100%!important;object-fit:contain;padding:0!important;background:#f4f4f4}.product-card>.product-img{width:100%;aspect-ratio:1/1;height:auto!important;object-fit:contain;padding:0!important}.product-hover-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:0;background:#f4f4f4;opacity:0;pointer-events:none;transition:opacity .2s ease}.product-card.has-video:hover .product-hover-video,.product-card.has-video.is-playing .product-hover-video{opacity:1}.product-card.has-video{cursor:pointer}';
+  css.textContent='.product-media{position:relative;width:100%;aspect-ratio:1/1;height:auto!important;background:#f4f4f4;overflow:hidden}.product-media .product-img,.product-media .product-img.placeholder{position:absolute;inset:0;width:100%;height:100%!important;object-fit:contain;padding:0!important;background:#f4f4f4;z-index:1;transition:opacity .2s ease}.product-hover-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:0;background:#f4f4f4;opacity:0;z-index:2;pointer-events:none;transition:opacity .2s ease}.product-card.has-video:hover .product-hover-video,.product-card.has-video.is-playing .product-hover-video{opacity:1}.product-card.has-video:hover .product-img,.product-card.has-video.is-playing .product-img{opacity:0}.product-card.has-video{cursor:pointer}';
   document.head.appendChild(css);
 })();
 function isTouchProductView(){
@@ -49,8 +49,9 @@ function stopCardVideo(card){
     var src=videoSrc(p&&p.VideoURL);
     if(!src) return html;
     var safe=src.replace(/&/g,'&').replace(/"/g,'"');
+    var video='<video class="product-hover-video" muted loop playsinline controlslist="nodownload" preload="auto" src="'+safe+'"></video>';
     html=html.replace('class="product-card"','class="product-card has-video"');
-    html=html.replace('<div class="product-media">','<div class="product-media"><video class="product-hover-video" muted loop playsinline controlslist="nodownload" preload="metadata" src="'+safe+'"></video>');
+    html=html.replace('</div><div class="product-info">',video+'</div><div class="product-info">');
     return html;
   };
 })();
@@ -69,11 +70,10 @@ document.addEventListener('mouseout',function(e){
   stopCardVideo(card);
 });
 document.addEventListener('click',function(e){
-  if(!isTouchProductView()||isOneUpGrid()) return;
+  if(!isTouchProductView()) return;
   var card=e.target.closest('.product-card.has-video');
   if(!card) return;
-  e.preventDefault();
-  if(card.classList.contains('is-playing')) stopCardVideo(card);
+  if(card.classList.contains('is-playing')&&!isOneUpGrid()) stopCardVideo(card);
   else playCardVideo(card);
 });
 var midObserver=null;
