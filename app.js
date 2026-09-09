@@ -38,8 +38,31 @@ function parseCsv(text){
 }
 function isActive(item){var s=String(item.Status||'').trim().toLowerCase();return s==='active'||s===''}
 function driveId(url){var m=String(url||'').match(/\/d\/([a-zA-Z0-9_-]+)/)||String(url||'').match(/[?&]id=([a-zA-Z0-9_-]+)/);return m?m[1]:''}
-function imageSrc(url){if(!url)return '';url=String(url).trim();if(url.indexOf('http')!==0||url.indexOf('SAMPLE_ID')>=0)return '';var id=driveId(url);if(id)return 'https://drive.google.com/thumbnail?id='+id+'&sz=w1200';return url}
-function imgTag(url,cls){var src=imageSrc(url);if(!src)return '';var id=driveId(url);var fb=id?('https://lh3.googleusercontent.com/d/'+id):'';var onerr=fb?("this.onerror=null;this.src='"+fb+"';"):"this.style.display='none'";return '<img class="'+cls+'" src="'+src+'" alt="" onerror="'+onerr+'">'}
+function imageFallbacks(url){
+  url=String(url||'').trim();
+  if(!url||url.indexOf('http')!==0||url.indexOf('SAMPLE_ID')>=0) return [];
+  var id=driveId(url);
+  if(id) return [
+    'https://lh3.googleusercontent.com/d/'+id+'=w800',
+    'https://drive.google.com/thumbnail?id='+id+'&sz=w800',
+    'https://drive.google.com/uc?export=view&id='+id
+  ];
+  return [url];
+}
+function imageSrc(url){return (imageFallbacks(url)[0]||'')}
+function imgError(el){
+  var s=el.getAttribute('data-fallbacks')||'';
+  if(!s){el.style.display='none';el.onerror=null;return;}
+  var next=s.split('|');
+  el.setAttribute('data-fallbacks',next.slice(1).join('|'));
+  el.src=next[0];
+}
+function imgTag(url,cls){
+  var list=imageFallbacks(url);
+  if(!list.length) return '';
+  var rest=list.slice(1).join('|').replace(/"/g,'');
+  return '<img class="'+cls+'" src="'+list[0]+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-fallbacks="'+rest+'" onerror="imgError(this)">';
+}
 function fetchSheet(key){var gid=SITE_CONFIG.GIDS[key];if(!gid)return Promise.resolve([]);return fetch(csvUrl(gid)).then(function(res){if(!res.ok)throw new Error('fetch failed');return res.text()}).then(parseCsv)}
 function setText(id,value){var el=document.getElementById(id);if(!el)return;if(!value){el.style.display='none';return}el.style.display='';el.textContent=value}
 function uniqueSorted(list){var seen={},out=[];list.forEach(function(v){v=String(v||'').trim();if(!v||seen[v])return;seen[v]=1;out.push(v)});out.sort();return out}
@@ -56,7 +79,7 @@ function productCard(p){
   var img=imgTag(p.ImageURL,'product-img')||'<div class="product-img placeholder">Photo in Sheet ImageURL</div>';
   var style=String(p.Style||'').trim();
   var moq=String(p.MOQ||'').trim();
-  return '<div class="product-card">'+img+'<div class="product-info">'+(style?'<div class="product-cat">'+style+'</div>':'')+'<div class="product-name">'+(p.ProductName||'')+'</div><div class="product-mat">'+(p.Materials||'')+'</div>'+(moq?'<div class="product-moq">MOQ: '+moq+' pcs</div>':'')+'</div></div>';
+  return '<div class="product-card"><div class="product-media">'+img+'</div><div class="product-info">'+(style?'<div class="product-cat">'+style+'</div>':'')+'<div class="product-name">'+(p.ProductName||'')+'</div><div class="product-mat">'+(p.Materials||'')+'</div>'+(moq?'<div class="product-moq">MOQ: '+moq+' pcs</div>':'')+'</div></div>';
 }
 function renderProductGroups(list){
   var order=['Handbag','Outdoor','Daily'];
