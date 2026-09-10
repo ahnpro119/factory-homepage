@@ -153,6 +153,10 @@ function renderRd(content, capRows, procRows){
     }).join('');
   }
 }
+function setFooterYear(){
+  var box=document.querySelector('footer .footer-inner div:last-child');
+  if(box) box.textContent='\u00a9 '+new Date().getFullYear()+' PT. Komitrando Emporio';
+}
 function loadAll(){
   var notice=document.getElementById('sheet-notice');
   Promise.all([
@@ -230,4 +234,4 @@ function loadAll(){
     document.getElementById('products-grid').innerHTML='<p class="lead">Could not load products from Google Sheets.</p>';
   });
 }
-document.addEventListener('DOMContentLoaded',loadAll);
+document.addEventListener('DOMContentLoaded',function(){setFooterYear();loadAll();});
