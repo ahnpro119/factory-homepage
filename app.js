@@ -23,7 +23,7 @@ function parseCsv(text){
   var start=0;
   for(var r=0;r<rows.length;r++){
     var joined=rows[r].join(' ').toLowerCase();
-    if(joined.indexOf('productname')>=0||joined.indexOf('departureport')>=0||(joined.indexOf('key')>=0&&joined.indexOf('section')>=0)||(joined.indexOf('title')>=0&&joined.indexOf('description')>=0)||(joined.indexOf('name')>=0&&joined.indexOf('issuer')>=0)||joined.indexOf('monthlypcs')>=0||joined.indexOf('capacitymonth')>=0||joined.indexOf('sampleroms')>=0||(joined.indexOf('role')>=0&&joined.indexOf('email')>=0)||(joined.indexOf('step')>=0&&joined.indexOf('title')>=0)){start=r;break}
+    if(joined.indexOf('productname')>=0||joined.indexOf('departureport')>=0||(joined.indexOf('key')>=0&&joined.indexOf('section')>=0)||(joined.indexOf('title')>=0&&joined.indexOf('description')>=0)||(joined.indexOf('name')>=0&&joined.indexOf('issuer')>=0)||joined.indexOf('monthlypcs')>=0||joined.indexOf('capacitymonth')>=0||joined.indexOf('sampleroms')>=0||(joined.indexOf('role')>=0&&joined.indexOf('email')>=0)||(joined.indexOf('step')>=0&&joined.indexOf('title')>=0)||(joined.indexOf('summary')>=0&&joined.indexOf('body')>=0)){start=r;break}
   }
   var headers=(rows[start]||[]).map(function(h){return String(h||'').trim()});
   var out=[];
@@ -153,6 +153,29 @@ function renderRd(content, capRows, procRows){
     }).join('');
   }
 }
+function renderInsights(list){
+  var box=document.getElementById('insights-list');
+  if(!box)return;
+  list=(list||[]).filter(function(r){return isActive(r)&&String(r.Title||'').trim()});
+  list.sort(function(a,b){
+    var da=String(a.Date||''), db=String(b.Date||'');
+    if(da!==db) return db.localeCompare(da);
+    return (parseInt(a.SortOrder,10)||999)-(parseInt(b.SortOrder,10)||999);
+  });
+  if(!list.length){
+    box.innerHTML='<p class="lead">Notes will appear here as we publish them.</p>';
+    return;
+  }
+  box.innerHTML=list.map(function(r){
+    var img=imgTag(r.ImageURL,'insight-img');
+    var tags=String(r.Tags||'').trim();
+    var body=String(r.Body||'').replace(/</g,'');
+    var sum=String(r.Summary||'').replace(/</g,'');
+    var title=String(r.Title||'').replace(/</g,'');
+    var meta=(r.Date||'')+(tags?((r.Date?' \u00b7 ':'')+tags):'');
+    return '<article class="insight">'+(meta?'<div class="insight-meta">'+meta+'</div>':'')+'<h3>'+title+'</h3>'+(sum?'<p class="insight-sum">'+sum+'</p>':'')+img+(body?'<p class="insight-body">'+body+'</p>':'')+'</article>';
+  }).join('');
+}
 function setFooterYear(){
   var box=document.querySelector('footer .footer-inner div:last-child');
   if(box) box.textContent='\u00a9 '+new Date().getFullYear()+' PT. Komitrando Emporio';
@@ -169,7 +192,8 @@ function loadAll(){
     fetchSheet('process').catch(function(){return []}),
     fetchSheet('contact').catch(function(){return []}),
     fetchSheet('rdProcess').catch(function(){return []}),
-    fetchSheet('rdCapability').catch(function(){return []})
+    fetchSheet('rdCapability').catch(function(){return []}),
+    fetchSheet('insights').catch(function(){return []})
   ]).then(function(all){
     var content={};
     all[0].forEach(function(r){var key=String(r.Key||'').trim();if(!key||key.indexOf('※')===0)return;content[key]=r.Content||r['Content (English)']||''});
@@ -229,6 +253,7 @@ function loadAll(){
       var wa=c.WhatsApp?'<p>WhatsApp '+c.WhatsApp+'</p>':'';
       return '<div class="card"><h3>'+(c.Role||'Contact')+'</h3><p>'+(c.Name||'')+'</p>'+mail+tel+wa+'<p>'+(c.Address||'')+'</p></div>';
     }).join('')||'<p class="lead">Use the emails in the company sheet.</p>';
+    renderInsights(all[10]||[]);
   }).catch(function(err){
     console.log(err); notice.classList.add('show');
     document.getElementById('products-grid').innerHTML='<p class="lead">Could not load products from Google Sheets.</p>';
