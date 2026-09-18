@@ -12,10 +12,12 @@
     '.insight-pager button:disabled{opacity:.28;cursor:default}'+
     '.insight-pager button:not(:disabled):hover{opacity:.65}'+
     '.insight-lab{position:absolute;right:0;bottom:0;text-align:right;transform:scale(.5);transform-origin:bottom right}'+
-    '.insight-lab-arrow{font-family:Caveat,cursive;font-size:28px;color:#171a20;transform:rotate(8deg);display:inline-block;margin-bottom:2px}'+
+    '.insight-lab-arrow{font-family:Caveat,cursive;font-size:56px;color:#171a20;display:block;line-height:1;animation:insightBounce 1.05s ease-in-out infinite}'+
+    '.insight-lab-note{font-family:Caveat,cursive;font-size:42px;color:#171a20;line-height:1;margin:2px 0 4px}'+
     '.insight-lab a{display:inline-block;text-decoration:none;color:#171a20}'+
     '.insight-lab-mark{font-family:Caveat,cursive;font-size:42px;font-weight:700;letter-spacing:.02em;line-height:1}'+
     '.insight-lab-sub{font-family:Caveat,cursive;font-size:20px;color:#5c5e62;margin-top:2px}'+
+    '@keyframes insightBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}'+
     '@media(max-width:800px){.insight-pager{gap:20px;padding:8px 0 56px}.insight-lab{bottom:0}}';
   var s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
 })();
@@ -60,9 +62,10 @@ function insightNavHtml(){
       '<button type="button" onclick="showNextInsight()" '+(nextOff?'disabled':'')+'>Next</button>'+
     '</div>'+
     '<div class="insight-lab">'+
-      '<div class="insight-lab-arrow">\u2198 behind the cut</div>'+
+      '<div class="insight-lab-arrow">\u2198</div>'+
+      '<div class="insight-lab-note">behind the cut</div>'+
       '<a href="https://www.instagram.com/ahn119_lab/" target="_blank" rel="noopener noreferrer">'+
-        '<div class="insight-lab-mark">ahn119 lab</div>'+
+        '<div class="insight-lab-mark">ahn119_lab</div>'+
         '<div class="insight-lab-sub">floor notes on Instagram</div>'+
       '</a>'+
     '</div>'+
