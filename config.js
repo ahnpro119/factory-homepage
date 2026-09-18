@@ -11,6 +11,7 @@ window.SITE_CONFIG = {
     csr: '1937839952',
     contact: '1705648852',
     rdProcess: '1798431488',
-    rdCapability: '1393092919'
+    rdCapability: '1393092919',
+    insights: '1680397680'
   }
 };
