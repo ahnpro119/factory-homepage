@@ -123,6 +123,12 @@ footer{background:#fff;border-top:1px solid #eee;padding:28px;color:#5c5e62;font
 .rd-steps li{display:grid;grid-template-columns:92px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid var(--line)}
 .rd-step-no{font-family:"Inter Tight",Inter,sans-serif;font-weight:600}
 .rd-steps p{color:#5c5e62;margin-top:6px}
+.insight{border-bottom:1px solid #ececec;padding:28px 0}
+.insight-meta{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5c5e62;margin-bottom:8px}
+.insight h3{font-family:"Inter Tight",Inter,sans-serif;font-size:26px;font-weight:600;letter-spacing:-.03em}
+.insight-sum{margin-top:8px;color:#3c3e42;font-size:16px}
+.insight-body{margin-top:12px;color:#5c5e62;white-space:pre-wrap}
+.insight-img{display:block;width:100%;max-width:720px;height:280px;object-fit:cover;margin:16px 0;background:#eee;border-radius:12px}
 @media(max-width:900px){.rd-grid{grid-template-columns:1fr}.rd-steps li{grid-template-columns:1fr}}
 @media(max-width:800px){
 header{height:auto}
@@ -144,6 +150,7 @@ header.solid nav button,header.solid nav .nav-careers{color:#171a20}
 <nav id="site-nav">
 <button type="button" id="nav-home" class="active" onclick="showSection('home')">Home</button>
 <button type="button" id="nav-products" onclick="showSection('products')">Products</button>
+<button type="button" id="nav-insights" onclick="showSection('insights')">Insights</button>
 <button type="button" id="nav-contact" onclick="showSection('contact')">Contact</button>
 <button type="button" id="nav-rnd" onclick="showSection('rnd')">R&D</button>
 <button type="button" id="nav-about" onclick="showSection('about')">About</button>
@@ -168,6 +175,11 @@ header.solid nav button,header.solid nav .nav-careers{color:#171a20}
 <p class="lead" id="custom-options"></p>
 <div class="notice" id="sheet-notice">Could not load Google Sheet data.</div>
 <div class="products-board" id="products-grid"></div>
+</div></section></div>
+<div id="section-insights" class="section"><section class="panel"><div class="wrap">
+<div class="kicker">Factory notes</div><h2>Insights</h2>
+<p class="lead">Short notes from the sample room, production floor, and export desk.</p>
+<div id="insights-list"></div>
 </div></section></div>
 <div id="section-rnd" class="section"><section class="panel"><div class="wrap">
 <div class="rd-hero" id="rd-hero">
