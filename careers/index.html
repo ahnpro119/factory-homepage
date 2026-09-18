@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Karir | KOMITRANDO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#171a20;--muted:#5c5e62;--line:rgba(23,26,32,.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,-apple-system,sans-serif;color:var(--ink);background:#fff;line-height:1.5;font-size:15px}
+a{color:inherit}
+header{height:56px;display:flex;align-items:center;border-bottom:1px solid var(--line)}
+.header-inner{width:100%;max-width:900px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:"Inter Tight",Inter,sans-serif;font-weight:700;font-size:15px;letter-spacing:.08em;text-decoration:none}
+.back{font-size:13px;color:var(--muted);text-decoration:none}
+main{max-width:900px;margin:0 auto;padding:48px 20px 80px}
+h1{font-family:"Inter Tight",Inter,sans-serif;font-size:clamp(28px,5vw,40px);font-weight:600;letter-spacing:-.03em;line-height:1.15}
+.sub{margin-top:8px;font-size:18px;color:var(--muted)}
+.intro{margin:22px 0 36px;max-width:640px;color:#3c3e42}
+.jobs{display:flex;flex-direction:column;gap:16px}
+.job{border:1px solid #ececec;border-radius:12px;padding:22px 24px}
+.job-meta{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.job h3{font-family:"Inter Tight",Inter,sans-serif;font-size:22px;font-weight:600}
+.job-en{font-size:13px;color:var(--muted);margin-top:2px}
+.job p{margin-top:10px;color:#3c3e42}
+.btn{display:inline-flex;align-items:center;justify-content:center;margin-top:16px;height:40px;padding:0 18px;background:#171a20;color:#fff;text-decoration:none;border-radius:4px;font-size:14px;font-weight:600}
+.empty{padding:28px 0;color:var(--muted)}
+.note{margin-top:36px;font-size:13px;color:var(--muted)}
+.notice{display:none;margin:16px 0;padding:12px 14px;background:#fff8e1;color:#6d4c00}
+.notice.show{display:block}
+footer{border-top:1px solid #eee;padding:20px;color:var(--muted);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<header><div class="header-inner">
+<a class="logo" href="/">KOMITRANDO.COM</a>
+<a class="back" href="/">Buyer site</a>
+</div></header>
+<main>
+<h1 id="page-title">Bergabung dengan Komitrando</h1>
+<p class="sub" id="page-sub"></p>
+<p class="intro" id="page-intro"></p>
+<div class="notice" id="notice">Could not load the careers sheet.</div>
+<div class="jobs" id="jobs"></div>
+<p class="note" id="page-note"></p>
+</main>
+<footer>PT. Komitrando Emporio · Bantul & Wonosari</footer>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
