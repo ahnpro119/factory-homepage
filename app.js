@@ -172,8 +172,15 @@ function renderInsights(list){
     var body=String(r.Body||'').replace(/</g,'');
     var sum=String(r.Summary||'').replace(/</g,'');
     var title=String(r.Title||'').replace(/</g,'');
+    var cap=String(r.ImageCaption||r.Caption||'').replace(/</g,'').trim();
+    var src=String(r.Sources||r.Source||'').replace(/</g,'').trim();
+    var author=String(r.Author||'').replace(/</g,'').trim();
     var meta=(r.Date||'')+(tags?((r.Date?' \u00b7 ':'')+tags):'');
-    return '<article class="insight">'+(meta?'<div class="insight-meta">'+meta+'</div>':'')+'<h3>'+title+'</h3>'+(sum?'<p class="insight-sum">'+sum+'</p>':'')+img+(body?'<p class="insight-body">'+body+'</p>':'')+'</article>';
+    var media=img?(img+(cap?'<p class="insight-caption">'+cap+'</p>':'')):'';
+    var foot='';
+    if(src) foot+='<p class="insight-source">'+src+'</p>';
+    if(author) foot+='<p class="insight-author">'+author+'</p>';
+    return '<article class="insight">'+(meta?'<div class="insight-meta">'+meta+'</div>':'')+'<h3>'+title+'</h3>'+(sum?'<p class="insight-sum">'+sum+'</p>':'')+media+(body?'<p class="insight-body">'+body+'</p>':'')+foot+'</article>';
   }).join('');
 }
 function setFooterYear(){
