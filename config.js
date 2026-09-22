@@ -1,5 +1,6 @@
 window.SITE_CONFIG = {
   PUB_BASE: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjZq_xftNfj4koj2Ujfvl3m_1BYn8shL1bXHbZ7JjB8jrHqDV0UqR9FeV6wKvBh84kKFM_hOmM4z2H/pub',
+  GA4: '',
   GIDS: {
     readme: '1630160151',
     siteContent: '881115171',
