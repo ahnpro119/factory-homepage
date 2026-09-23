@@ -1,11 +1,14 @@
 (function(){
   var s=document.createElement('script');
   s.src='media-guard.js';
+  var f=document.createElement('script');
+  f.src='video-fallback.js';
+  document.head.appendChild(f);
   document.head.appendChild(s);
 })();
 (function(){
   var css=document.createElement('style');
-  css.textContent='.product-media{position:relative;width:100%;aspect-ratio:1/1;height:auto!important;background:#f4f4f4;overflow:hidden}.product-media .product-img,.product-media .product-img.placeholder{position:absolute;inset:0;width:100%;height:100%!important;object-fit:contain;padding:0!important;background:#f4f4f4;z-index:1;transition:opacity .2s ease}.product-hover-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:0;background:#f4f4f4;opacity:0;z-index:2;pointer-events:none;transition:opacity .2s ease}.product-card.has-video:hover .product-hover-video,.product-card.has-video.is-playing .product-hover-video{opacity:1}.product-card.has-video:hover .product-img,.product-card.has-video.is-playing .product-img{opacity:0}.product-card.has-video{cursor:pointer}';
+  css.textContent='.product-media{position:relative;width:100%;aspect-ratio:1/1;height:auto!important;background:#f4f4f4;overflow:hidden}.product-media .product-img,.product-media .product-img.placeholder{position:absolute;inset:0;width:100%;height:100%!important;object-fit:contain;padding:0!important;background:#f4f4f4;z-index:1;transition:opacity .2s ease}.product-hover-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:0;background:#f4f4f4;opacity:0;z-index:2;pointer-events:none;transition:opacity .2s ease}.product-card.has-video:hover .product-hover-video,.product-card.has-video.is-playing .product-hover-video{opacity:1}.product-card.has-video:hover .product-img,.product-card.has-video.is-playing .product-img{opacity:0}.product-card.has-video{cursor:pointer}.product-card.video-failed .product-img{opacity:1!important}.product-card.video-failed{cursor:default}';
   document.head.appendChild(css);
 })();
 function isTouchProductView(){
@@ -17,12 +20,13 @@ function isOneUpGrid(){
 function videoSrc(url){
   url=String(url||'').trim();
   if(!url || url.indexOf('http')!==0) return null;
-  if(/(?:youtube\.com|youtu\.be)/.test(url)) return null;
+  if(/(?:youtube\\.com|youtu\\.be)/.test(url)) return null;
   return url;
 }
 var playingCard=null;
 function playCardVideo(card){
   if(!card) return;
+  if(card.classList.contains('video-failed')) return;
   if(playingCard&&playingCard!==card) stopCardVideo(playingCard);
   var vid=card.querySelector('.product-hover-video');
   if(!vid) return;
@@ -49,7 +53,7 @@ function stopCardVideo(card){
     var src=videoSrc(p&&p.VideoURL);
     if(!src) return html;
     var safe=src.replace(/&/g,'&').replace(/"/g,'"');
-    var video='<video class="product-hover-video" muted loop playsinline controlslist="nodownload" preload="auto" src="'+safe+'"></video>';
+    var video='<video class="product-hover-video" muted loop playsinline controlslist="nodownload" preload="metadata" src="'+safe+'"></video>';
     html=html.replace('class="product-card"','class="product-card has-video"');
     html=html.replace('</div><div class="product-info">',video+'</div><div class="product-info">');
     return html;
