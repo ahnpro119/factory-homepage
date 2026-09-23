@@ -26,18 +26,28 @@ var insightPosts=[];
 var insightIndex=0;
 var insightMode='article';
 
+function insightMedia(r){
+  var out='';
+  function add(url, cap){
+    var img=imgTag(url,'insight-img');
+    if(!img) return;
+    cap=String(cap||'').replace(/</g,'').trim();
+    out+=img+(cap?'<p class="insight-caption">'+cap+'</p>':'');
+  }
+  add(r.ImageURL, r.ImageCaption||r.Caption);
+  add(r.ImageURL2, r.ImageCaption2);
+  return out;
+}
 function insightFull(r){
-  var img=imgTag(r.ImageURL,'insight-img');
   var tags=String(r.Tags||'').trim();
   var body=String(r.Body||'').replace(/</g,'');
   body=body.replace(/\n*\s*ahn\s*(?=\n|$)/gi,'').replace(/\n*\s*Next:\s*[^\n]*/gi,'').replace(/\n{3,}/g,'\n\n').trim();
   var sum=String(r.Summary||'').replace(/</g,'');
   var title=String(r.Title||'').replace(/</g,'');
-  var cap=String(r.ImageCaption||r.Caption||'').replace(/</g,'').trim();
   var src=String(r.Sources||r.Source||'').replace(/</g,'').trim();
   var author=String(r.Author||'').replace(/</g,'').trim();
   var meta=(r.Date||'')+(tags?((r.Date?' \u00b7 ':'')+tags):'');
-  var media=img?(img+(cap?'<p class="insight-caption">'+cap+'</p>':'')):'';
+  var media=insightMedia(r);
   var foot='';
   if(author) foot+='<p class="insight-author">'+author+'</p>';
   if(src) foot+='<p class="insight-source">'+src+'</p>';
