@@ -111,7 +111,7 @@ function renderRd(content, capRows, procRows){
   var nav=document.getElementById('nav-rnd');
   if(nav&&content.rd_nav_label) nav.textContent=content.rd_nav_label;
   setText('rd-overview-title',content.rd_overview_title||'R & D Overview');
-  setText('rd-overview-intro',content.rd_overview-intro);
+  setText('rd-overview-intro',content.rd_overview_intro);
   setText('rd-interp-title',content.rd_interp_title);
   setText('rd-interp-1',content.rd_interp_1);
   setText('rd-interp-2',content.rd_interp_2);
