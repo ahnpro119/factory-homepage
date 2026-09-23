@@ -1,27 +1,42 @@
 (function(){
   var WAIT=8000;
+
   function dropVideo(video){
     if(!video) return;
     try{video.pause()}catch(e){}
+    video.removeAttribute('autoplay');
     video.removeAttribute('src');
     video.querySelectorAll('source').forEach(function(s){s.removeAttribute('src')});
     try{video.load()}catch(e){}
     video.style.display='none';
   }
-  function arm(video, onFail){
-    if(!video || video.getAttribute('data-armed')) return;
+
+  function alreadyDecided(video){
+    return video && (video.getAttribute('data-vf')==='ok' || video.getAttribute('data-vf')==='fail');
+  }
+
+  function watchVideo(video, onFail, waitMs){
+    if(!video || alreadyDecided(video) || video.getAttribute('data-armed')) return;
     video.setAttribute('data-armed','1');
     var done=false;
-    function ok(){ if(done) return; done=true; clearTimeout(t); }
-    function fail(){ if(done) return; done=true; clearTimeout(t); onFail(); }
-    video.addEventListener('canplay', ok);
-    video.addEventListener('playing', ok);
-    video.addEventListener('error', fail);
+    function finish(ok){
+      if(done) return;
+      done=true;
+      clearTimeout(t);
+      video.setAttribute('data-vf', ok ? 'ok' : 'fail');
+      if(!ok) onFail();
+    }
+    if(video.error){ finish(false); return; }
+    if(video.readyState>=3){ finish(true); return; }
+    video.addEventListener('canplay', function(){ finish(true); });
+    video.addEventListener('playing', function(){ finish(true); });
+    video.addEventListener('error', function(){ finish(false); });
     var t=setTimeout(function(){
-      if(video.readyState>=2) ok();
-      else fail();
-    }, WAIT);
+      if(video.readyState>=3 && !video.error) finish(true);
+      else finish(false);
+    }, waitMs||WAIT);
   }
+
   function ensureHeroStill(){
     var hero=document.querySelector('.hero');
     var v=document.querySelector('.hero-video');
@@ -35,28 +50,40 @@
     hero.insertBefore(still, v);
     return still;
   }
+
+  function failHero(){
+    var hero=document.querySelector('.hero');
+    var v=document.querySelector('.hero-video');
+    var still=ensureHeroStill();
+    if(hero) hero.classList.add('video-failed');
+    dropVideo(v);
+    if(still && still.getAttribute('src')) still.style.display='block';
+  }
+
   function setupHero(){
     var v=document.querySelector('.hero-video');
     if(!v) return;
-    var still=ensureHeroStill();
-    arm(v, function(){
-      dropVideo(v);
-      if(still && still.getAttribute('src')) still.style.display='block';
-    });
+    ensureHeroStill();
+    watchVideo(v, failHero, WAIT);
   }
-  function setupCard(card){
-    var v=card.querySelector('.product-hover-video');
-    if(!v) return;
-    arm(v, function(){
-      card.classList.add('video-failed');
-      card.classList.remove('has-video','is-playing');
-      dropVideo(v);
-      if(v.parentNode) v.parentNode.removeChild(v);
-    });
+
+  function failCard(card, video){
+    if(!card) return;
+    card.classList.add('video-failed');
+    card.classList.remove('has-video','is-playing');
+    dropVideo(video);
+    if(video && video.parentNode) video.parentNode.removeChild(video);
   }
-  function scan(){
-    document.querySelectorAll('.product-card.has-video').forEach(setupCard);
-  }
+
+  window.watchProductVideo=function(card, video){
+    if(!card || !video || card.classList.contains('video-failed')) return;
+    watchVideo(video, function(){ failCard(card, video); }, WAIT);
+  };
+
+  window.failProductVideo=function(card, video){
+    failCard(card, video);
+  };
+
   window.applyHeroPoster=function(url){
     url=String(url||'').trim();
     if(!url) return;
@@ -65,13 +92,7 @@
     if(v) v.setAttribute('poster', url);
     if(still) still.src=url;
   };
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setupHero);
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', setupHero);
   else setupHero();
-  function bind(){
-    var grid=document.getElementById('products-grid');
-    if(grid) new MutationObserver(scan).observe(grid,{childList:true,subtree:true});
-    scan();
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind);
-  else bind();
 })();
