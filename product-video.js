@@ -1,14 +1,11 @@
 (function(){
   var s=document.createElement('script');
   s.src='media-guard.js';
-  var f=document.createElement('script');
-  f.src='video-fallback.js';
-  document.head.appendChild(f);
   document.head.appendChild(s);
 })();
 (function(){
   var css=document.createElement('style');
-  css.textContent='.product-media{position:relative;width:100%;aspect-ratio:1/1;height:auto!important;background:#f4f4f4;overflow:hidden}.product-media .product-img,.product-media .product-img.placeholder{position:absolute;inset:0;width:100%;height:100%!important;object-fit:contain;padding:0!important;background:#f4f4f4;z-index:1;transition:opacity .2s ease}.product-hover-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:0;background:#f4f4f4;opacity:0;z-index:2;pointer-events:none;transition:opacity .2s ease}.product-card.has-video:hover .product-hover-video,.product-card.has-video.is-playing .product-hover-video{opacity:1}.product-card.has-video:hover .product-img,.product-card.has-video.is-playing .product-img{opacity:0}.product-card.has-video{cursor:pointer}.product-card.video-failed .product-img{opacity:1!important}.product-card.video-failed{cursor:default}';
+  css.textContent='.product-media{position:relative;width:100%;aspect-ratio:1/1;height:auto!important;background:#f4f4f4;overflow:hidden}.product-media .product-img,.product-media .product-img.placeholder{position:absolute;inset:0;width:100%;height:100%!important;object-fit:contain;padding:0!important;background:#f4f4f4;z-index:1;transition:opacity .2s ease}.product-hover-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:0;background:#f4f4f4;opacity:0;z-index:2;pointer-events:none;transition:opacity .2s ease}.product-card.has-video:hover .product-hover-video,.product-card.has-video.is-playing .product-hover-video{opacity:1}.product-card.has-video:hover .product-img,.product-card.has-video.is-playing .product-img{opacity:0}.product-card.has-video{cursor:pointer}.product-card.video-failed .product-img{opacity:1!important}.product-card.video-failed .product-hover-video{display:none!important}.product-card.video-failed{cursor:default}.hero.video-failed .hero-video{display:none}.hero.video-failed .hero-still[src]{display:block}';
   document.head.appendChild(css);
 })();
 function isTouchProductView(){
@@ -20,8 +17,11 @@ function isOneUpGrid(){
 function videoSrc(url){
   url=String(url||'').trim();
   if(!url || url.indexOf('http')!==0) return null;
-  if(/(?:youtube\\.com|youtu\\.be)/.test(url)) return null;
+  if(/(?:youtube\.com|youtu\.be)/.test(url)) return null;
   return url;
+}
+function escAttr(s){
+  return String(s).replace(/&/g,'&').replace(/"/g,'"').replace(/</g,'<');
 }
 var playingCard=null;
 function playCardVideo(card){
@@ -33,8 +33,14 @@ function playCardVideo(card){
   playingCard=card;
   card.classList.add('is-playing');
   vid.muted=true;
+  if(vid.getAttribute('preload')!=='auto') vid.setAttribute('preload','auto');
+  if(window.watchProductVideo) window.watchProductVideo(card, vid);
   var run=vid.play();
-  if(run&&run.catch) run.catch(function(){});
+  if(run&&run.catch) run.catch(function(err){
+    var name=err&&err.name;
+    if(name==='NotAllowedError'||name==='AbortError') return;
+    if(window.failProductVideo) window.failProductVideo(card, vid);
+  });
 }
 function stopCardVideo(card){
   if(!card) return;
@@ -52,8 +58,7 @@ function stopCardVideo(card){
     var html=original(p);
     var src=videoSrc(p&&p.VideoURL);
     if(!src) return html;
-    var safe=src.replace(/&/g,'&').replace(/"/g,'"');
-    var video='<video class="product-hover-video" muted loop playsinline controlslist="nodownload" preload="metadata" src="'+safe+'"></video>';
+    var video='<video class="product-hover-video" muted loop playsinline controlslist="nodownload" preload="none" src="'+escAttr(src)+'"></video>';
     html=html.replace('class="product-card"','class="product-card has-video"');
     html=html.replace('</div><div class="product-info">',video+'</div><div class="product-info">');
     return html;
