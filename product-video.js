@@ -1,4 +1,7 @@
 (function(){
+  var f=document.createElement('script');
+  f.src='video-fallback.js';
+  document.head.appendChild(f);
   var s=document.createElement('script');
   s.src='media-guard.js';
   document.head.appendChild(s);
